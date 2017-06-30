@@ -1,0 +1,25 @@
+#%RAML 0.8
+title: DWNinja API
+version: v0.1
+
+/executors:
+  /dw:
+    post:
+      body:
+        application/json: 
+          example: | 
+            {
+              "inputType": "application/xml",
+              "payload": "<some>xml</some>",
+              "expresion": "payload",
+              "outputType": "application/json"
+            }
+      responses:
+        200:
+          body:
+            application/json: 
+              example: | 
+                { "some": "xml"}
+            application/xml: 
+              example: |
+                <some>xml</some>

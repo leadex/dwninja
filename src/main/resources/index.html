@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>DataWeave Ninja</title>
+<style type="text/css" media="screen">
+    #input { 
+        position: absolute;
+        top: 50px;
+        height: 90%;
+        width: 33%; 
+    }
+    #dw { 
+        position: absolute;
+        top: 50px;
+        left: 33%;
+        height: 90%;
+        width: 33%; 
+    }
+    #output { 
+        position: absolute;
+        top: 50px;
+        left: 66%;
+        height: 90%;
+        width: 33%; 
+    }
+    #button {
+        position: absolute; 
+        left: 33.5%;
+        padding: 5px;
+        background-color: #272822; 
+        border: none;
+        color: white;
+        height: 40px;
+        width: 32.5%; 
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 20px;
+    }
+    #status {
+        position: absolute; 
+        left: 66.5%;
+        padding: 5px;
+        background-color: #272822; 
+        border: none;
+        color: white;
+        height: 40px;
+        width: 33%; 
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 20px;
+    }
+    #inputType {
+        padding: 5px;
+        color: white;
+        background-color: #272822; 
+        border: none;
+        height: 40px;
+        font-size: 20px;
+        text-align: center;
+        text-decoration: none;
+        width: 33%;
+    }
+</style>
+</head>
+<body>
+    
+<script src="/ace-builds/src/ace.js" type="text/javascript" charset="utf-8"></script>
+
+<!--settings space-->
+<select id="inputType" onchange="inputTypeChangeHandler(this)">
+    <option value="ace/mode/json">application/json</option>
+    <option value="ace/mode/xml">application/xml</option>
+    <option value="ace/mode/text">application/csv</option>
+</select>
+<button id="button" onclick="evaluateDW()">Hiyah</button>
+<button id="status"></button>
+
+<!--editors space-->
+<div id="input" onChange="onChange()">{
+    "dataweave": "ninja"    
+}
+</div>
+<div id="dw" onChange="onChange()">%dw 1.0
+%output application/json
+---
+capitalize payload.dataweave</div>
+<div id="output"></div>
+
+<script>
+    var input = ace.edit("input");
+    input.setTheme("ace/theme/monokai");
+    input.getSession().setMode("ace/mode/json");
+    
+    var dw = ace.edit("dw");
+    dw.setTheme("ace/theme/monokai");
+    dw.getSession().setMode("ace/mode/dw");
+    var output = ace.edit("output");
+    output.setTheme("ace/theme/monokai");
+    output.getSession().setMode("ace/mode/json");
+    output.$blockScrolling = Infinity;
+
+    window.state = {
+        edited: false,
+        lastEdit: Date.now()
+    };
+
+    function onChange() {
+        evaluateDW();
+        var diff = Date.now().getTime() - window.state.lastEdit.getTime();
+        if (window.state.edited && diff > 2000) {
+            evaluateDW();
+            window.state.edited = false;
+            window.state.lastEdit = Date.now();
+        } else {
+            window.state.edited = true;
+            window.state.lastEdit = Date.now();
+        }
+    }
+
+    function inputTypeChangeHandler(option) {
+        input.getSession().setMode(option.value);
+    }
+
+    function evaluateDW() {
+        var inputTypeDom = document.getElementById("inputType");
+        var inputType = inputTypeDom.options[inputTypeDom.selectedIndex].text;
+        var request = { payload:  input.getValue(), expresion: dw.getValue(), inputType: inputType};
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "/api/executors/dw", true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.onreadystatechange = function() {//Call a function when the state changes.
+            //if(xhttp.readyState == 4 && xhttp.status == 200) {
+                document.getElementById("status").innerHTML = xhttp.status;
+                var text = xhttp.responseText;
+                output.setValue(text);
+                var mode = "ace/mode/" + xhttp.getResponseHeader("Content-Type").replace("application/", "").replace(";charset=UTF-8", "");
+                if (mode == "csv") {
+                    text = text.replace("\n", "\r\n");
+                    mode = "text";
+                }
+                output.setValue(text);
+                output.getSession().setMode(mode);
+            //}
+        }
+        xhttp.send(JSON.stringify(request));
+    }
+</script>
+
+</body>
+</html>
