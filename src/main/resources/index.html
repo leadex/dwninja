@@ -5,63 +5,85 @@
 <style type="text/css" media="screen">
     #input { 
         position: absolute;
-        top: 50px;
-        height: 90%;
+        top: 7%;
+        left: 0%;
+        height: 58%;
         width: 33%; 
     }
-    #dw { 
+    #variablesTable { 
         position: absolute;
-        top: 50px;
-        left: 33%;
-        height: 90%;
+        background-color: #272822;
+        bottom: 0%;
+        left: 0%;
+        height: 35%;
         width: 33%; 
+        
+    }
+    #dw { 
+        border:1px solid #202020;
+        position: absolute;
+        top: 7%;
+        left: 33%;
+        height: 92.8%;
+        width: 34%; 
     }
     #output { 
         position: absolute;
-        top: 50px;
-        left: 66%;
-        height: 90%;
-        width: 33%; 
+        top: 7%;
+        left: 67.1%;
+        height: 93%;
+        width: 32.9%; 
     }
     #button {
-        position: absolute; 
-        left: 33.5%;
-        padding: 5px;
+        position: absolute;
+        top: 0%; 
+        left: 33%;
         background-color: #272822; 
-        border: none;
+        border:1px solid #151515;
         color: white;
-        height: 40px;
-        width: 32.5%; 
+        height: 7%;
+        width: 34.1%; 
         text-align: center;
         text-decoration: none;
         display: inline-block;
         font-size: 20px;
+        cursor:pointer;
     }
+
     #status {
         position: absolute; 
-        left: 66.5%;
-        padding: 5px;
+        top: 0%;
+        left: 67.1%;
         background-color: #272822; 
-        border: none;
+        border:2px solid #202020;
         color: white;
-        height: 40px;
-        width: 33%; 
+        height: 7%;
+        width: 32.65%; 
         text-align: center;
         text-decoration: none;
         display: inline-block;
         font-size: 20px;
     }
     #inputType {
-        padding: 5px;
+        top: 0%;
+        left: 0%;
+        position: absolute; 
         color: white;
         background-color: #272822; 
-        border: none;
-        height: 40px;
+        border:2px solid #202020;
+        height: 7%;
         font-size: 20px;
         text-align: center;
         text-decoration: none;
+        display: inline-block;
         width: 33%;
+        cursor:pointer;
     }
+    .ace_tooltip {
+    max-width:50px;
+    word-wrap:break-word!important;
+    white-space: pre-wrap!important;
+}
 </style>
 </head>
 <body>
@@ -73,25 +95,30 @@
     <option value="ace/mode/json">application/json</option>
     <option value="ace/mode/xml">application/xml</option>
     <option value="ace/mode/text">application/csv</option>
+    <option value="ace/mode/java">application/java</option>
 </select>
 <button id="button" onclick="evaluateDW()">Hiyah</button>
-<button id="status"></button>
+<div id="status"></div>
 
 <!--editors space-->
 <div id="input" onChange="onChange()">{
-    "dataweave": "ninja"    
+    "title": "DataWeave"    
 }
 </div>
 <div id="dw" onChange="onChange()">%dw 1.0
 %output application/json
 ---
-capitalize payload.dataweave</div>
+{
+    "I'm": payload.title ++ " " ++ capitalize flowVars.name
+}</div>
 <div id="output"></div>
+<div id="variablesTable"/>
 
 <script>
     var input = ace.edit("input");
     input.setTheme("ace/theme/monokai");
     input.getSession().setMode("ace/mode/json");
+    input.$blockScrolling = Infinity;
     
     var dw = ace.edit("dw");
     dw.setTheme("ace/theme/monokai");
@@ -100,33 +127,105 @@ capitalize payload.dataweave</div>
     output.setTheme("ace/theme/monokai");
     output.getSession().setMode("ace/mode/json");
     output.$blockScrolling = Infinity;
-
+    output.getSession().setUseWrapMode(true)
+    
     window.state = {
-        edited: false,
-        lastEdit: Date.now()
+        currentIndex: 0
     };
+    window.variables = [{
+        name: "payload",
+        value: "\n{\t\"title\": \"DataWeave\"\n}",
+        type: "application/json"
+    },{
+        name: "flowVars.name",
+        value: "ninja",
+        type: "application/java"
+    }];
+    printVariables();
 
-    function onChange() {
-        evaluateDW();
-        var diff = Date.now().getTime() - window.state.lastEdit.getTime();
-        if (window.state.edited && diff > 2000) {
-            evaluateDW();
-            window.state.edited = false;
-            window.state.lastEdit = Date.now();
-        } else {
-            window.state.edited = true;
-            window.state.lastEdit = Date.now();
-        }
+    function printVariables() {
+       var table = document.getElementById("variablesTable");
+       var tableStyle = "style=\"width: 99.9%; height: 100%;border-color: #151515; border-width: 2px\" cellspacing=\"0\" cellpadding=\"0\"";
+       var html = "<div  style=\"border:1px solid #151515; overflow-y: auto; position: absolute; width: 100%; height: 80%\"><table " + tableStyle + ">";
+       
+       var style = " style=\"border:1px solid #202020; height: 30px; width: 18%;\" ";
+       var styleName = " style=\"border:1px solid #202020; height: 30px; width: 64%;\" ";
+
+       var contentStyle = " style=\"position: relative; width: 100%; height: 100%; ";
+       contentStyle += "background-color: #272822; text-align: center; border: none; color: white; font-size: 20px;\"";
+       // variables html
+       for(var i = 0 ; i < window.variables.length; i++) {
+         var variable = window.variables[i];
+         html += "<tr><td " + styleName + "><input " + contentStyle;
+         html += "id=\"variable" + i + "\" ";
+         html += "value=\"" + variable.name + "\" ";
+         html += "oninput=\"endEdit(" + i + ")\"/>";
+         html += "<td " + style + "><div " + contentStyle + " onclick=\"swapToVar(" + i + ")\">Edit</div></td>";
+         html += "<td " + style + "><div " + contentStyle + " onclick=\"removeSelf(" + i + ")\">Remove</div></td></tr>";
+       }
+
+       html += "</table></div>"
+       
+       //add button
+       var buttonAddStyle = " style=\"background-color: #272822; text-align: center; border:1px solid #151515; color: white; font-size: 35px; ";
+       buttonAddStyle += "bottom: 0%; height: 20%; width: 100.1%; position: absolute;\"";
+       html += "<button " + buttonAddStyle + " onclick=\"addVar()\">+</button>";
+       
+      
+       table.innerHTML = html;
     }
 
-    function inputTypeChangeHandler(option) {
-        input.getSession().setMode(option.value);
+    function removeSelf(index) {
+        swapToVar(0);
+        window.variables.splice(index, 1);
+        printVariables();
+    }
+
+    function endEdit(index) {
+        var variable = window.variables[index];
+        var currentName = document.getElementById("variable" + index).value;
+        variable.name = currentName;
+    }
+
+    function swapToVar(index) {
+        var currentVariable = window.variables[window.state.currentIndex];
+        currentVariable.value = input.getValue();
+
+        var swapToVariable = window.variables[index];
+        input.setValue(swapToVariable.value);
+        var inputType = document.getElementById("inputType");
+        
+        var inputTypeIndex = -1;
+        for(i = 0 ; i < inputType.options.length; i++) {
+            if (inputType.options[i].text == swapToVariable.type) {
+                inputTypeIndex = i;
+            }
+        }
+        inputType.selectedIndex = inputTypeIndex;
+        input.getSession().setMode(inputType.options[inputTypeIndex].value);
+        window.state.currentIndex = index;
+    }
+
+    function addVar() {
+        var payloadDoesNotExists = window.variables.filter(variable => variable.name == "payload").length == 0;
+        var name = payloadDoesNotExists ? "payload" : "flowVars.name" + window.variables.length;
+        window.variables.push({name: name, value: "", type: "application/java"});
+        printVariables();
+    }
+
+    function inputTypeChangeHandler(select) {
+        input.getSession().setMode(select.value);
+        window.variables[window.state.currentIndex].type = select.options[select.selectedIndex].text;
     }
 
     function evaluateDW() {
+        swapToVar(window.state.currentIndex);
         var inputTypeDom = document.getElementById("inputType");
         var inputType = inputTypeDom.options[inputTypeDom.selectedIndex].text;
-        var request = { payload:  input.getValue(), expresion: dw.getValue(), inputType: inputType};
+        var payload = window.variables.filter(variable => variable.name.indexOf("payload") !== -1)[0];
+        var flowVars = window.variables.filter(variable => variable.name.indexOf("flowVars.") !== -1);
+        var request = { payload:  payload, flowVars: flowVars, expression: dw.getValue(), inputType: inputType};
+
         var xhttp = new XMLHttpRequest();
         xhttp.open("POST", "/api/executors/dw", true);
         xhttp.setRequestHeader("Content-type", "application/json");

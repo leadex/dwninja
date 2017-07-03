@@ -18,14 +18,25 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 payload]]></dw:set-payload>
             </dw:transform-message>
             <enrich source="#[payload.payload]" target="#[flowVars.payload]"/>
-            <enrich source="#[payload.expresion]" target="#[flowVars.expresion]"/>
+            <enrich source="#[payload.expression]" target="#[flowVars.expression]"/>
             <enrich source="#[payload.inputType]" target="#[flowVars.inputType]"/>
             <enrich source="#[payload.outputType]" target="#[flowVars.outputType]"/>
+            <enrich source="#[payload.flowVars]" target="#[flowVars.flowVars]"/>
         </enricher>
+        <flow-ref name="setFlowVars" doc:name="setFlowVars"/>
         <component class="ru.ekabardinsky.tool.dwninja.dw.RequestProcessor" doc:name="Java"/>
-        <set-payload value="#[dw(flowVars.expresion, flowVars.outputType)]" doc:name="Set Payload"/>
+        <set-payload value="#[dw(flowVars.expression, flowVars.outputType)]" doc:name="Set Payload"/>
         <byte-array-to-string-transformer doc:name="Byte Array to String"/>
         <component class="ru.ekabardinsky.tool.dwninja.dw.ResponseProcessor" doc:name="Java"/>
         <set-property propertyName="content-type" value="#[flowVars.outputType]" doc:name="Property"/>
+        <catch-exception-strategy doc:name="Catch Exception Strategy">
+            <set-property propertyName="http.status" value="500" doc:name="Property"/>
+            <set-payload value="#[groovy:message.getExceptionPayload().getRootException().getMessage()]" doc:name="Set Payload"/>
+        </catch-exception-strategy>
     </flow>
+    <sub-flow name="setFlowVars">
+        <foreach collection="#[flowVars.flowVars]" doc:name="For Each">
+            <component class="ru.ekabardinsky.tool.dwninja.dw.FlowVarsProcessor" doc:name="Java"/>
+        </foreach>
+    </sub-flow>
 </mule>

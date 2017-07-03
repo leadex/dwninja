@@ -1,5 +1,7 @@
 package ru.ekabardinsky.tool.dwninja.dw;
 
+import java.util.Map;
+
 import org.mule.api.MuleEventContext;
 import org.mule.api.MuleMessage;
 import org.mule.api.lifecycle.Callable;
@@ -10,11 +12,11 @@ public class RequestProcessor implements Callable {
 	public Object onCall(MuleEventContext eventContext) throws Exception {
 		MuleMessage message = eventContext.getMessage();
 
-		String payload = message.getInvocationProperty("payload");
-		String expresion = message.getInvocationProperty("expresion");
-		String inputType = message.getInvocationProperty("inputType");
+		Map payload = message.getInvocationProperty("payload");
+		String expression = message.getInvocationProperty("expression");
+		String inputType = (String) payload.get("type");
 
-		String[] split = expresion.split("\n");
+		String[] split = expression.split("\n");
 
 		for (String statement : split) {
 			if(statement.contains("output")) {
@@ -23,7 +25,7 @@ public class RequestProcessor implements Callable {
 			}
 		}
 
-		message.setPayload(payload);
+		message.setPayload(payload.get("value"));
 		message.getDataType().setMimeType(inputType);
 
 		return message;
