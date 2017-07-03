@@ -176,9 +176,11 @@
     }
 
     function removeSelf(index) {
-        swapToVar(0);
-        window.variables.splice(index, 1);
-        printVariables();
+        if (index != 0) {
+            swapToVar(0);
+            window.variables.splice(index, 1);
+            printVariables();
+        }
     }
 
     function endEdit(index) {

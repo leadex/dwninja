@@ -19,7 +19,7 @@ public class RequestProcessor implements Callable {
 		String[] split = expression.split("\n");
 
 		for (String statement : split) {
-			if(statement.contains("output")) {
+			if (statement.contains("output")) {
 				String[] output = statement.replaceAll("%output", "").trim().split(" ");
 				message.setInvocationProperty("outputType", output[0]);
 			}
