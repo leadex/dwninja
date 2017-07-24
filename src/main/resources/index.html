@@ -3,118 +3,133 @@
 <head>
 <title>DataWeave Ninja</title>
 <style type="text/css" media="screen">
-    #input { 
-        position: absolute;
-        top: 7%;
-        left: 0%;
-        height: 58%;
-        width: 33%; 
-    }
-    #variablesTable { 
-        position: absolute;
-        background-color: #272822;
-        bottom: 0%;
-        left: 0%;
-        height: 35%;
-        width: 33%; 
-        
-    }
-    #dw { 
-        border:1px solid #202020;
-        position: absolute;
-        top: 7%;
-        left: 33%;
-        height: 92.8%;
-        width: 34%; 
-    }
-    #output { 
-        position: absolute;
-        top: 7%;
-        left: 67.1%;
-        height: 93%;
-        width: 32.9%; 
-    }
-    #button {
-        position: absolute;
-        top: 0%; 
-        left: 33%;
-        background-color: #272822; 
-        border:1px solid #151515;
-        color: white;
-        height: 7%;
-        width: 34.1%; 
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 20px;
-        cursor:pointer;
-    }
+#input {
+	position: absolute;
+	top: 7%;
+	left: 0%;
+	height: 58%;
+	width: 33%;
+}
 
-    #status {
-        position: absolute; 
-        top: 0%;
-        left: 67.1%;
-        background-color: #272822; 
-        border:2px solid #202020;
-        color: white;
-        height: 7%;
-        width: 32.65%; 
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 20px;
-    }
-    #inputType {
-        top: 0%;
-        left: 0%;
-        position: absolute; 
-        color: white;
-        background-color: #272822; 
-        border:2px solid #202020;
-        height: 7%;
-        font-size: 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        width: 33%;
-        cursor:pointer;
-    }
-    .ace_tooltip {
-    max-width:50px;
-    word-wrap:break-word!important;
-    white-space: pre-wrap!important;
+#variablesTable {
+	position: absolute;
+	background-color: #272822;
+	bottom: 0%;
+	left: 0%;
+	height: 35%;
+	width: 33%;
+}
+
+#dw {
+	border: 1px solid #202020;
+	position: absolute;
+	top: 7%;
+	left: 33%;
+	height: 92.8%;
+	width: 34%;
+}
+
+#output {
+	position: absolute;
+	top: 7%;
+	left: 67.1%;
+	height: 93%;
+	width: 32.9%;
+}
+
+#button {
+	position: absolute;
+	top: 0%;
+	left: 33%;
+	background-color: #272822;
+	border: 1px solid #151515;
+	color: white;
+	height: 7%;
+	width: 34.1%;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 20px;
+	cursor: pointer;
+}
+
+#status {
+	position: absolute;
+	top: 0%;
+	left: 67.1%;
+	background-color: #272822;
+	border: 2px solid #202020;
+	color: white;
+	height: 7%;
+	width: 32.65%;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 20px;
+}
+
+#inputType {
+	top: 0%;
+	left: 0%;
+	position: absolute;
+	color: white;
+	background-color: #272822;
+	border: 2px solid #202020;
+	height: 7%;
+	font-size: 20px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	width: 33%;
+	cursor: pointer;
+}
+
+.ace_tooltip {
+	max-width: 50px;
+	word-wrap: break-word !important;
+	white-space: pre-wrap !important;
 }
 </style>
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
 </head>
 <body>
-    
-<script src="/ace-builds/src/ace.js" type="text/javascript" charset="utf-8"></script>
 
-<!--settings space-->
-<select id="inputType" onchange="inputTypeChangeHandler(this)">
-    <option value="ace/mode/json">application/json</option>
-    <option value="ace/mode/xml">application/xml</option>
-    <option value="ace/mode/text">application/csv</option>
-    <option value="ace/mode/java">application/java</option>
-</select>
-<button id="button" onclick="evaluateDW()">Hiyah</button>
-<div id="status"></div>
+	<script src="/ace-builds/src/ace.js" type="text/javascript"
+		charset="utf-8"></script>
 
-<!--editors space-->
-<div id="input" onChange="onChange()">{
-    "title": "DataWeave"    
-}
-</div>
-<div id="dw" onChange="onChange()">%dw 1.0
-%output application/json
----
-{
-    "I'm": payload.title ++ " " ++ capitalize flowVars.name
-}</div>
-<div id="output"></div>
-<div id="variablesTable"/>
+	<!--settings space-->
+	<select id="inputType" onchange="inputTypeChangeHandler(this)">
+		<option value="ace/mode/json">application/json</option>
+		<option value="ace/mode/xml">application/xml</option>
+		<option value="ace/mode/text">application/csv</option>
+		<option value="ace/mode/java">application/java</option>
+	</select>
+	<button id="button" onclick="evaluateDW()">Hiyah</button>
+	<div id="status">
+		<a class="github-button"
+			href="https://github.com/ekabardinsky/dwninja"
+			data-icon="octicon-star" data-size="large" data-show-count="true"
+			aria-label="Star ekabardinsky/dwninja on GitHub">Star</a>
+		<a class="github-button"
+			href="https://github.com/ekabardinsky/dwninja/issues"
+			data-icon="octicon-issue-opened" data-size="large"
+			data-show-count="true"
+			aria-label="Issue ekabardinsky/dwninja on GitHub">Issue</a>
+		<a class="github-button" href="https://github.com/ekabardinsky"
+			data-size="large" data-show-count="true"
+			aria-label="Follow @ekabardinsky on GitHub">Follow @ekabardinsky</a>
+	</div>
+	<!--editors space-->
+	<div id="input" onChange="onChange()">{ "title": "DataWeave" }</div>
+	<div id="dw" onChange="onChange()">%dw 1.0 
+%output application/json 
+--- 
+{ "I'm": payload.title ++ " " ++ capitalize flowVars.name }</div>
+	<div id="output"></div>
+	<div id="variablesTable" />
 
-<script>
+	<script>
     var input = ace.edit("input");
     input.setTheme("ace/theme/monokai");
     input.getSession().setMode("ace/mode/json");
@@ -233,7 +248,7 @@
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.onreadystatechange = function() {//Call a function when the state changes.
             //if(xhttp.readyState == 4 && xhttp.status == 200) {
-                document.getElementById("status").innerHTML = xhttp.status;
+                document.getElementById("status").innerHTML = "<a>Response code: " + xhttp.status + "</a>";
                 var text = xhttp.responseText;
                 output.setValue(text);
                 var mode = "ace/mode/" + xhttp.getResponseHeader("Content-Type").replace("application/", "").replace(";charset=UTF-8", "");
@@ -248,6 +263,5 @@
         xhttp.send(JSON.stringify(request));
     }
 </script>
-
 </body>
 </html>
