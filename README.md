@@ -14,8 +14,8 @@
 2) Remove no longer needed variables
 3) Use those variables in DW script!
 
-# How I can try it
+# How you can try it
 
 0) Clone this repo!
 1) Build it
-2) Deploy it to your own Mule Runtime 3.8.\* EE
+2) Deploy it to your own Mule Runtime 3.8.4 EE
