@@ -16,4 +16,6 @@
 
 # How I can try it
 
-Try it here: [dwninja.tk](http://dwninja.tk)
+0) Clone this repo!
+1) Build it
+2) Deploy it to your own Mule Runtime 3.8.\* EE
