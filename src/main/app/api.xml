@@ -4,7 +4,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd">
-    <http:listener-config name="api-httpListenerConfig" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <http:listener-config name="api-httpListenerConfig" host="0.0.0.0" port="${api.port}" doc:name="HTTP Listener Configuration"/>
     <apikit:config name="api-config" raml="api.raml" consoleEnabled="false" doc:name="Router"/>
     <context:property-placeholder location="${mule.env}.properties"/>
     <flow name="api-main">
@@ -14,7 +14,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     </flow>
     <flow name="apiFlow">
         <http:listener config-ref="api-httpListenerConfig" path="/*" doc:name="HTTP"/>
-        <http:static-resource-handler resourceBase="${static.path}" doc:name="HTTP Static Resource Handler"/>
+        <http:static-resource-handler resourceBase="${mule.home}/apps/${app.name}/classes" doc:name="HTTP Static Resource Handler"/>
     </flow>
     <flow name="api-console">
         <http:listener config-ref="api-httpListenerConfig" path="/console/*" doc:name="HTTP"/>
